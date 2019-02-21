@@ -1,0 +1,6 @@
+#soal1
+14 14 * 2 5 ~/SoalShift_modul1_B02/soal1.sh
+
+
+#soal5
+2-30/6 * * * * ~/SoalShift_modul1_B02/soal5.sh

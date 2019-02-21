@@ -150,15 +150,44 @@ d. Password yang dihasilkan tidak boleh sama.
     number=1
     suffix=1
     while test -e "password$suffix.txt";
-            do
-                    ((++number))
-                    suffix="$number"
-            done
+	    do
+		    ((++number))
+		    suffix="$number"
+		done
     fname="password$suffix.txt"
     randomnum=$(</dev/urandom tr -dc A-Z-a-z-0-9 | head -c12)
     echo "$randomnum" > "$fname"
 	```  
+	> See : [full code](../soal3.sh)  
+	
     **Penjelasan :**  
+    1. Inisial variabel :
+	    ```sh
+	    number=1
+	    suffix=1
+	    ```
+	    `suffix=1` karena nama file pasti dimulai dari password1.txt  
+	    `number=1` sebagai temporary untuk memeriksa file yang ada nantinya.
+    2. Lakukan *looping* menggunakan `while` ketika `test -e "password$suffix"` , untuk memeriksa apakah file itu ada atau tidak, jika file tersebut ada maka _looping_ akan berjalan dengan menambahkan +1 kedalam `suffix` hingga ke file yang belum ada.
+	    ```sh
+	    while test -e "password$suffix.txt"
+	        do
+                ((++number))
+                suffix="$number" 
+	        done
+	    ```
+    3. Buat nama file yang belum ada.
+	    ```sh
+	    fname="password$suffix.txt" 
+	    ```
+    4. Random string A-Z, a-z, dan 1-9 menggunakan `/dev/urandom` dengan `tr`, lalu ambil bagian depan saja menggunakan `head -c12`.
+	    ```sh
+	    randomnum=$(</dev/urandom tr -dc A-Z-a-z-0-9 | head -c12)
+		```
+    5. cetak password acak tersebut kedalam file teks.
+	    ```sh
+	    echo "$randomnum" > "$fname"
+	    ```
     
 4. Lakukan backup file syslog setiap jam dengan format nama file “jam:menit tanggal-bulan-tahun”. Isi dari file backup terenkripsi dengan konversi huruf (string manipulation) yang disesuaikan dengan jam dilakukannya backup misalkan sebagai berikut:  
 	a. Huruf b adalah alfabet kedua, sedangkan saat ini waktu menunjukkan pukul 12, sehingga huruf b diganti dengan huruf alfabet yang memiliki urutan ke 12+2 = 14.  
@@ -170,10 +199,41 @@ d. Password yang dihasilkan tidak boleh sama.
     **Penjelasan :**
 
 5. Buatlah sebuah script bash untuk menyimpan record dalam syslog yang memenuhi kriteria berikut:  
-	a. Tidak mengandung string “sudo”, tetapi mengandung string “cron”, serta buatlah pencarian stringnya tidak bersifat case sensitive, sehingga huruf kapital atau tidak, tidak menjadi masalah.
-    b. Jumlah field (number of field) pada baris tersebut berjumlah kurang dari 13.
+	a. Tidak mengandung string “sudo”, tetapi mengandung string “cron”, serta buatlah pencarian stringnya tidak bersifat case sensitive, sehingga huruf kapital atau tidak, tidak menjadi masalah.  
+    b. Jumlah field (number of field) pada baris tersebut berjumlah kurang dari 13.  
     c. Masukkan record tadi ke dalam file logs yang berada pada direktori /home/[user]/modul1.  
     d. Jalankan script tadi setiap 6 menit dari menit ke 2 hingga 30, contoh
-13:02, 13:08, 13:14, dst.
+13:02, 13:08, 13:14, dst.  
 	**Jawab :**  
+	> [Full code](../soal5.sh)
+	```sh
+	tstmp = `date '+%Y-%m-%d_%H:%M'`
+	awk '{IGNORECASE=1}NF<13 !/sudo/ && /cron/{print} /var/log/syslog > ~/modul1/syslog_$tstmp.bak
+	```
+	> [crontab](../crontab)  
+	```sh
+      2-30/6 * * * * ~/SoalShift_modul1_B02/soal5.sh
+	```
     **Penjelasan :**
+	1. Dengan menggunakan syntax `awk` biasa.
+	2. Tidak mengandung "sudo" dan mengandung "cron" : `!/sudo/ && /cron/`.
+	3. Tidak bersifat _case sensitive_ : `IGNORECASE=1`.
+	4. Jumlah _field_ kurang dari 13 : `NF < 13`. Maka:  
+		```sh
+		$ awk '{IGNORECASE=1}NF<13 !/sudo/ && /cron/{print} /var/log/syslog
+		```
+	5. Setelah itu _write_ hasil awk ke dalam _directory_ ~/modul1/ dan kita juga dapat memberikan _timestamp_ menggunakan _command_ `date` dikarenakan program ini nantinya akan berjalan tiap 6 menit. Maka jadilah : 
+		```sh
+		#!/bin/bash
+		
+		tstmp = `date '+%Y-%m-%d_%H:%M'`
+		awk '{IGNORECASE=1}NF<13 !/sudo/ && /cron/{print} /var/log/syslog > ~/modul1/syslog_$tstmp.bak
+		```
+	6. Terakhir jalankan program menggunakan `crontab`.
+		```sh
+ 		 2-30/6 * * * * ~/SoalShift_modul1_B02/soal5.sh
+		``` 
+		
+	> See :
+	> [Full code](../soal5.sh)
+	> [crontab](../crontab)  
