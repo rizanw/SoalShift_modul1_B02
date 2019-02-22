@@ -1,4 +1,5 @@
 
+
 # Laporan Praktikum SoalShift_modul1_B02
 
  1. Anda diminta tolong oleh teman anda untuk mengembalikan filenya yang telah dienkripsi oleh seseorang menggunakan bash script, file yang dimaksud adalah nature.zip. Karena terlalu mudah kalian memberikan syarat akan membuka seluruh file tersebut jika pukul 14:14 pada tanggal 14 Februari atau hari tersebut adalah hari jumat pada bulan Februari.  
@@ -131,6 +132,13 @@ Laporan yang diminta berupa:
 		```sh
 		$ awk -F "," '{if($7=="2012" && $1=="United States" && ($4=="Personal Accessories" || $4=="Camping Equipment" || $4=="Outdoor Protection")) a[$6]+=$10} END {for(v in a)print a[v]" - "v}' WA_Sales_Products_2012-14.csv | sort -nr | head -3 | awk -F "-" '{print $2}' 
 		``` 
+		Maka tiga produk teratas dari poin b ialah : 
+		```sh
+		 Zone
+		 TrailChef Water Bag
+		 Single Edge
+		```
+	> See : [full code](../soal2.sh)
 
 3. Buatlah sebuah script bash yang dapat menghasilkan password secara acak
 sebanyak 12 karakter yang terdapat huruf besar, huruf kecil, dan angka. Password
@@ -195,8 +203,34 @@ d. Password yang dihasilkan tidak boleh sama.
     c. setelah huruf z akan kembali ke huruf a  
     d. Backup file syslog setiap jam.  
     e. dan buatkan juga bash script untuk dekripsinya.  
-    **Jawab :**  
-    **Penjelasan :**
+    **Jawab :** 
+    > Bash file. See: [full code](../soal4.sh)
+    ```sh
+    #!/bin/bash
+    lowercase=(a b c d e f g h i j k l m n o p q r s t u v w x y z)
+    uppercase=(A B C D E F G H I J K L M N O P Q R S T U V W X Y Z)
+    tgl=`date +"%d"`
+    bln=`date +"%m"`
+    thn=`date +"%Y"`
+    jam=`date +"%H"`
+    mnt=`date +"%M"`
+    home="/home/sherly"
+    namafile="$home/$jam:$mnt $tgl-$bln-$thn.txt"
+    bawah=${lowercase[$jam]}
+    atas=${uppercase[$jam]}
+    cat /var/log/syslog > /home/sherly/syslog4.txt
+    cat /home/sherly/syslog4.txt | tr '[a-z]' "[$bawah-za-$bawah]" | tr '[A-Z]' "[$atas-ZA-$atas]" > "$namafile"
+    ```
+    > Crontab. See: [full code](../soal4.sh)
+    ```sh
+     0 */1 * * * ~/SoalShift_modul1_B02/soal4.sh
+    ```
+    **Penjelasan :**  
+     Menjadikan file syslog sebagai input dengan command cat setelah itu char yang berada pada range a-z akan diubah satu persatu sesuai jam
+Contoh :
+apabila jam menunjukkan 2, maka a menjadi c, b menjadi d, c menjadi e, dan seterusnya. 
+Range [b-za-b] adalah dari char b sampai dengan z, kemudian dilanjut dari char a sampai dengan b.
+Berlaku demikian untuk huruf besar
 
 5. Buatlah sebuah script bash untuk menyimpan record dalam syslog yang memenuhi kriteria berikut:  
 	a. Tidak mengandung string “sudo”, tetapi mengandung string “cron”, serta buatlah pencarian stringnya tidak bersifat case sensitive, sehingga huruf kapital atau tidak, tidak menjadi masalah.  
